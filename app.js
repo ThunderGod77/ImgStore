@@ -2,8 +2,10 @@ const express = require("express");
 const AWS = require("aws-sdk");
 const multer = require("multer");
 const multerS3 = require("multer-s3");
-
+const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
+
+const { registerImg } = require("./models/photoStore");
 
 const bodyParser = require("body-parser");
 
@@ -112,8 +114,12 @@ const upload = multer({
     bucket: "myspacelol",
     acl: "public-read",
     key: function (request, file, cb) {
-      // console.log(file);
-      cb(null, file.originalname);
+      const unique = uuidv4();
+      cb(null, unique + file.originalname);
+      console.log(unique + file.originalname);
+      request.body.url = `https://myspacelol.fra1.digitaloceanspaces.com/${
+        unique + file.originalname
+      }`;
     },
   }),
 }).array("lol", 1);
@@ -124,6 +130,7 @@ app.post("/upload", function (request, response, next) {
       console.log(error);
       return;
     }
+    registerImg(request.body.url, request.body.name, request.body.description);
     console.log("File uploaded successfully.");
   });
 });
