@@ -5,9 +5,12 @@ const multerS3 = require("multer-s3");
 const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
 
+const { registerUser } = require("./models/users.js");
+
 const { registerImg } = require("./models/photoStore");
 
 const bodyParser = require("body-parser");
+const { resolveSoa } = require("dns");
 
 const app = express();
 
@@ -150,6 +153,25 @@ app.post("/upload", function (request, response, next) {
 //     else console.log(data);
 //   });
 // });
+
+app.post("/register", async (req, res, next) => {
+  try {
+    let response = await registerUser(
+      req.body.username,
+      req.body.email,
+      req.body.password
+    );
+
+    if (response.found) {
+      res.status(404).json({ message: response.message, done: false });
+    } else {
+      res.status(201).json({ message: response.message, done: true });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(404).json({ message: response.message, done: false });
+  }
+});
 
 app.use("/test", (req, res, next) => {
   res.status(200).json({ test: "lol", ko: "ko" });
