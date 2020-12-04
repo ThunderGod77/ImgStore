@@ -133,7 +133,13 @@ app.post("/upload", function (request, response, next) {
       console.log(error);
       return;
     }
-    registerImg(request.body.url, request.body.name, request.body.description);
+    registerImg(
+      request.body.url,
+      request.body.name,
+      request.body.description,
+      request.body.topic,
+      request.body.tags
+    );
     console.log("File uploaded successfully.");
   });
 });
@@ -163,13 +169,13 @@ app.post("/register", async (req, res, next) => {
     );
 
     if (response.found) {
-      res.status(404).json({ message: response.message, done: false });
+      res.status(200).json({ message: response.message, done: false });
     } else {
       res.status(201).json({ message: response.message, done: true });
     }
   } catch (err) {
     console.log(err);
-    res.status(404).json({ message: response.message, done: false });
+    res.status(200).json({ message: response.message, done: false });
   }
 });
 

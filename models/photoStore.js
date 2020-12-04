@@ -9,15 +9,19 @@ const imgStoreSchema = new mongoose.Schema({
   url: String,
   name: String,
   description: String,
+  topic: String,
+  tags: [String],
 });
 
 const Img = mongoose.model("Img", imgStoreSchema);
 
-exports.registerImg = async (url, name, description) => {
+exports.registerImg = async (url, name, description, topic, tags) => {
   const newImg = new Img({
     url: url,
     name: name,
     description: description,
+    topic: topic,
+    tags: tags.split(","),
   });
   await newImg.save((err, result) => {
     if (err) {
